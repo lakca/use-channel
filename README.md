@@ -19,6 +19,42 @@ type MyChannel<D> = TwoWayChannel<{
 }>
 ```
 
-## Quick Start
+```typescript
+export function TwoWayState() {
+  const channel = useChannel<CounterChannel>('Parent')
+  const { count, setCount } = useChannelExternalStateSync(channel, 'count', 0)
+  // actually: channel.listen('onChangeCount') & channel.send('$onChangeCount')
+  return (
+    <>
+      <h1>Parent: {count}</h1>
+      <button onClick={() => setCount(count => count + 1)}>Parent + 1</button>
+      <Counter channel={channel} />
+    </>
+  )
+}
 
-See [examples](examples) OR clone the repo and  `pnpm install && pnpm run dev`
+export function Counter({ channel: rcvChannel }: { channel: Channel<CounterChannel> }) {
+  const channel = useChannel('Counter').connect(rcvChannel)
+  const { count, setCount } = useChannelSourceStateSync(channel, 'count', 0)
+  // actually: channel.listen('$onChangeCount') & channel.send('onChangeCount')
+  return (
+    <>
+      <button onClick={() => setCount(count => count + 1)}>Counter + 1</button>
+    </>
+  )
+}
+```
+
+API (See details in [`core.ts`](src/core.ts)):
+
+- `useChannel(ChannelName?:string)`
+- `useChannelSourceState(channel:Channel, stateName:string, initialValue?)`
+- `useChannelSourceStateSync(channel:Channel, stateName:string, initialValue?)`
+- `useChannelExternalState(channel:Channel, stateName:string, initialValue?)`
+- `useChannelExternalStateSync(channel:Channel, stateName:string, initialValue?)`
+- `channel.connect(channel:Channel)`
+- `type TwoWayChannel`
+
+## Get Details
+
+See [demo](http://longpeng.me/use-channel/) / [examples](examples) OR clone the repo and  `pnpm install && pnpm run dev`
