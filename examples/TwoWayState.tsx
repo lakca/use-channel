@@ -4,6 +4,7 @@ type CounterChannel = TwoWayChannel<{
   onChangeCount: (count: number) => void
 }>
 
+TwoWayState.componentName = 'TwoWayState'
 export function TwoWayState() {
   const channel = useChannel<CounterChannel>('Parent')
   Object.assign(window, { channel })

@@ -5,6 +5,7 @@ type CounterChannel = TwoWayChannel<{
   onChangePri: (count: number) => void
 }>
 
+InYourControl.componentName = 'InYourControl'
 export function InYourControl() {
   const channel = useChannel<CounterChannel>('Parent')
   Object.assign(window, { channel })

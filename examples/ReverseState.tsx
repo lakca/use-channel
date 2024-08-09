@@ -4,6 +4,7 @@ type CounterChannel = {
   onChangeCount: (count: number) => void
 }
 
+ReverseState.componentName = 'ReverseState'
 export function ReverseState() {
   const channel = useChannel<CounterChannel>('Parent')
   Object.assign(window, { channel })

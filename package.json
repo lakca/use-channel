@@ -45,9 +45,16 @@
       }
     }
   },
-  "files": [ "src", "dist", "package.json", "README.md", "LICENSE" ],
+  "files": [
+    "src",
+    "dist",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "dev": "vite",
+    "static": "vite build",
     "dts": "shx rm -rf dist/modules && tsc -p tsconfig.build.json",
     "build": "shx rm -rf dist && pnpm run dts && rollup --config rollup.config.js",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
@@ -104,5 +111,9 @@
   "peerDependencies": {
     "@types/react": ">=18.0.0",
     "react": ">=18.0.0"
-  }
+  },
+  "volta": {
+    "node": "18.20.4"
+  },
+  "packageManager": "pnpm@9.7.0+sha512.dc09430156b427f5ecfc79888899e1c39d2d690f004be70e05230b72cb173d96839587545d09429b55ac3c429c801b4dc3c0e002f653830a420fa2dd4e3cf9cf"
 }

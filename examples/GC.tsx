@@ -9,6 +9,7 @@ function getPrivate<R>(obj: object, prop: string): R {
   return (obj as Record<string, unknown>)[prop] as unknown as R
 }
 
+GC.componentName = 'GC'
 export function GC() {
   const [index, setIndex] = useState(0)
   const channel = useChannel<CounterChannel>('App')

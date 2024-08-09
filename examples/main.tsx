@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client'
 import { ChannelNet } from './ChannelNet'
 import { ReverseState } from './ReverseState'
-import { useState } from 'react'
+import { FC, useState } from 'react'
 import { Disposal } from './Disposal'
 import { GC } from './GC'
 import { TwoWayState } from './TwoWayState'
@@ -14,15 +14,15 @@ const components = [
   ChannelNet,
   Disposal,
   GC,
-]
+] as unknown as (FC & { componentName: string })[]
 
 export function App() {
   const [id, setName] = useState<number>(0)
   const Component = components[id]
   return (
     <>
-      {components.map((e, i) => <button key={i} onClick={() => setName(i)}>{e.name}</button>)}
-      <h1>{components[id].name}</h1>
+      {components.map((e, i) => <button key={i} onClick={() => setName(i)}>{e.componentName}</button>)}
+      <h1>{components[id].componentName}</h1>
       <Component />
     </>
   )

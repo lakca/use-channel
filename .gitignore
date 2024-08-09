@@ -149,3 +149,4 @@ coverage
 html
 .rollup.cache
 dist
+static

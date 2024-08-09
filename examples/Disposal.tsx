@@ -5,6 +5,7 @@ type CounterChannel = {
   onChangeCount: (count: number) => void
 }
 
+Disposal.componentName = 'Disposal'
 export function Disposal() {
   const [display, setDisplay] = useState(true)
 

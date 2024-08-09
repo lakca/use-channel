@@ -11,6 +11,7 @@ type ChildChannel = TwoWayChannel<{
   onChangeChild: (value: string) => void
 }>
 
+ChannelNet.componentName = 'ChannelNet'
 export function ChannelNet() {
   const channel = useChannel<ParentChannel & ChildChannel>('Parent')
   const { parent } = useChannelSourceStateSync(channel, 'parent')

@@ -30,7 +30,7 @@ export default [
     }],
     plugins: [
       esbuild({
-        target: 'es2018',
+        target: 'es2015',
         supported: { 'import-meta': true },
       }),
     ],
