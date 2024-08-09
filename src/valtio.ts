@@ -2,13 +2,7 @@
 import { useEffect } from 'react'
 import { subscribeKey } from 'valtio/utils'
 
-import { Channel, ExternalPrefix, getStateEventName, Listeners, SourcePrefix, StateEventName, StateKey, StateKeys } from './core'
-
-type ProxyWill<T extends Listeners> = {
-  [K in keyof T as StateKey<K & string, typeof SourcePrefix>]: Parameters<T[K]>[0]
-} & {
-  [K in keyof T as StateKey<K & string, typeof ExternalPrefix>]: Parameters<T[K]>[0]
-}
+import { Channel, ExternalPrefix, getStateEventName, Listeners, SourcePrefix, StateEventName, StateKeys } from './core'
 
 type ProxyShould<T extends Listeners, S extends string, E extends string> = {
   [K in S]: Parameters<T[StateEventName<typeof SourcePrefix, K>]>[0]

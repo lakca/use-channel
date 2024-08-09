@@ -1,16 +1,78 @@
 {
   "name": "use-channel",
+  "description": "Take over state transmission in React.",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "main": "./dist/cjs/core.cjs",
+  "module": "./dist/mjs/core.mjs",
+  "types": "./dist/cjs/core.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/mjs/core.d.ts",
+        "default": "./dist/mjs/core.mjs"
+      },
+      "require": {
+        "types": "./dist/cjs/core.d.ts",
+        "default": "./dist/cjs/core.cjs"
+      },
+      "node": {
+        "types": "./dist/cjs/core.d.ts",
+        "default": "./dist/cjs/core.cjs"
+      },
+      "default": {
+        "types": "./dist/cjs/core.d.ts",
+        "default": "./dist/cjs/core.cjs"
+      }
+    },
+    "./*": {
+      "import": {
+        "types": "./dist/mjs/*.d.ts",
+        "default": "./dist/mjs/*.mjs"
+      },
+      "require": {
+        "types": "./dist/cjs/*.d.ts",
+        "default": "./dist/cjs/*.cjs"
+      },
+      "node": {
+        "types": "./dist/cjs/*.d.ts",
+        "default": "./dist/cjs/*.cjs"
+      },
+      "default": {
+        "types": "./dist/cjs/*.d.ts",
+        "default": "./dist/cjs/*.cjs"
+      }
+    }
+  },
+  "files": [ "src", "dist", "package.json", "README.md", "LICENSE" ],
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "dts": "shx rm -rf dist/modules && tsc -p tsconfig.build.json",
+    "build": "shx rm -rf dist && pnpm run dts && rollup --config rollup.config.js",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "ui": "vitest --ui --coverage.enabled=true"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lakca/use-channel.git"
+  },
+  "keywords": [
+    "react",
+    "state",
+    "two-way",
+    "cross",
+    "channel",
+    "event"
+  ],
+  "author": "lakca",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lakca/use-channel/issues"
+  },
+  "homepage": "https://github.com/lakca/use-channel",
   "devDependencies": {
     "@stylistic/eslint-plugin": "^2.6.1",
     "@testing-library/jest-dom": "^6.4.8",
@@ -28,10 +90,19 @@
     "jsdom": "^24.1.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "rollup": "^4.20.0",
+    "rollup-plugin-dts": "^6.1.1",
+    "rollup-plugin-esbuild": "^6.1.1",
+    "shx": "^0.3.4",
+    "tslib": "^2.6.3",
     "typescript": "^5.2.2",
     "valtio": "^1.13.2",
     "vite": "^5.3.4",
     "vite-tsconfig-paths": "^4.3.2",
     "vitest": "^2.0.5"
+  },
+  "peerDependencies": {
+    "@types/react": ">=18.0.0",
+    "react": ">=18.0.0"
   }
 }
