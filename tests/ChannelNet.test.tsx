@@ -1,0 +1,53 @@
+import { it } from 'vitest'
+import { fireEvent, render } from '@testing-library/react'
+import { ChannelNet } from 'examples/ChannelNet'
+
+it('Channel Net', async () => {
+  const { findByText: _findByText, getByTestId, unmount } = render(<ChannelNet />)
+
+  function findByText(text: string) {
+    console.log(text)
+    return _findByText((_, el) => el?.textContent === text)
+  }
+
+  await findByText('Parent: ')
+  await findByText('Parent Show Child: 0')
+  await findByText('Middle: 0')
+  await findByText('Middle Show Parent: ')
+  await findByText('Child: 0')
+  await findByText('Child Show Parent: ')
+  await findByText('Child Show Middle: 0')
+  fireEvent.change(getByTestId('Parent Set Child') as HTMLInputElement, { target: { value: '1' } })
+  await findByText('Parent: ')
+  await findByText('Parent Show Child: 1')
+  await findByText('Middle: 0')
+  await findByText('Middle Show Parent: ')
+  await findByText('Child: 1')
+  await findByText('Child Show Parent: ')
+  await findByText('Child Show Middle: 0')
+  fireEvent.change(getByTestId('Middle Set Parent') as HTMLInputElement, { target: { value: '2' } })
+  await findByText('Parent: 2')
+  await findByText('Parent Show Child: 1')
+  await findByText('Middle: 0')
+  await findByText('Middle Show Parent: 2')
+  await findByText('Child: 1')
+  await findByText('Child Show Parent: 2')
+  await findByText('Child Show Middle: 0')
+  fireEvent.change(getByTestId('Child Set Parent') as HTMLInputElement, { target: { value: '3' } })
+  await findByText('Parent: 3')
+  await findByText('Parent Show Child: 1')
+  await findByText('Middle: 0')
+  await findByText('Middle Show Parent: 3')
+  await findByText('Child: 1')
+  await findByText('Child Show Parent: 3')
+  await findByText('Child Show Middle: 0')
+  fireEvent.change(getByTestId('Child Set Middle Privately') as HTMLInputElement, { target: { value: '4' } })
+  await findByText('Parent: 3')
+  await findByText('Parent Show Child: 1')
+  await findByText('Middle: 0')
+  await findByText('Middle Show Parent: 3')
+  await findByText('Child: 1')
+  await findByText('Child Show Parent: 3')
+  await findByText('Child Show Middle: 4')
+  unmount()
+})
