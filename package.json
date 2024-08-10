@@ -1,7 +1,6 @@
 {
   "name": "use-channel",
   "description": "Take over state transmission in React.",
-  "private": true,
   "version": "1.0.0",
   "type": "module",
   "main": "./dist/cjs/core.cjs",
@@ -60,7 +59,13 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "test": "vitest",
     "ci": "vitest run --coverage",
-    "ui": "vitest --ui --coverage"
+    "ui": "vitest --ui --coverage",
+    "prepare": "husky"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "repository": {
     "type": "git",
@@ -70,7 +75,7 @@
     "react",
     "state",
     "two-way",
-    "cross",
+    "cross-levels",
     "channel",
     "event"
   ],
@@ -80,7 +85,20 @@
     "url": "https://github.com/lakca/use-channel/issues"
   },
   "homepage": "https://github.com/lakca/use-channel",
+  "release": {
+    "branches": [ "main", "release/*" ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/changelog",
+      "@semantic-release/npm",
+      "@semantic-release/git",
+      "@semantic-release/github"
+    ]
+  },
   "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
     "@stylistic/eslint-plugin": "^2.6.1",
     "@testing-library/jest-dom": "^6.4.8",
     "@testing-library/react": "^16.0.0",
@@ -94,12 +112,15 @@
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-react-refresh": "^0.4.7",
+    "husky": "^9.1.4",
     "jsdom": "^24.1.1",
+    "lint-staged": "^15.2.8",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "rollup": "^4.20.0",
     "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-esbuild": "^6.1.1",
+    "semantic-release": "^24.0.0",
     "shx": "^0.3.4",
     "tslib": "^2.6.3",
     "typescript": "^5.2.2",
