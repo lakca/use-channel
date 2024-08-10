@@ -59,8 +59,8 @@
     "build": "shx rm -rf dist && pnpm run dts && rollup --config rollup.config.js",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "test": "vitest",
-    "coverage": "vitest run --coverage",
-    "ui": "vitest --ui --coverage.enabled=true"
+    "ci": "vitest run --coverage",
+    "ui": "vitest --ui --coverage"
   },
   "repository": {
     "type": "git",
