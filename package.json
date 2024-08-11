@@ -3,45 +3,21 @@
   "description": "Take over state transmission in React.",
   "version": "1.0.0",
   "type": "module",
-  "main": "./dist/cjs/core.cjs",
-  "module": "./dist/mjs/core.mjs",
-  "types": "./dist/cjs/core.d.ts",
+  "main": "./dist/core.cjs",
+  "module": "./dist/core.mjs",
+  "types": "./dist/core.d.ts",
   "exports": {
     ".": {
-      "import": {
-        "types": "./dist/mjs/core.d.ts",
-        "default": "./dist/mjs/core.mjs"
-      },
-      "require": {
-        "types": "./dist/cjs/core.d.ts",
-        "default": "./dist/cjs/core.cjs"
-      },
-      "node": {
-        "types": "./dist/cjs/core.d.ts",
-        "default": "./dist/cjs/core.cjs"
-      },
-      "default": {
-        "types": "./dist/cjs/core.d.ts",
-        "default": "./dist/cjs/core.cjs"
-      }
+      "import": "./dist/core.mjs",
+      "require": "./dist/core.cjs",
+      "node": "./dist/core.cjs",
+      "default": "./dist/core.cjs"
     },
     "./*": {
-      "import": {
-        "types": "./dist/mjs/*.d.ts",
-        "default": "./dist/mjs/*.mjs"
-      },
-      "require": {
-        "types": "./dist/cjs/*.d.ts",
-        "default": "./dist/cjs/*.cjs"
-      },
-      "node": {
-        "types": "./dist/cjs/*.d.ts",
-        "default": "./dist/cjs/*.cjs"
-      },
-      "default": {
-        "types": "./dist/cjs/*.d.ts",
-        "default": "./dist/cjs/*.cjs"
-      }
+      "import": "./dist/*.mjs",
+      "require": "./dist/*.cjs",
+      "node": "./dist/*.cjs",
+      "default": "./dist/*.cjs"
     }
   },
   "files": [
@@ -54,8 +30,8 @@
   "scripts": {
     "dev": "vite",
     "static": "vite build",
-    "dts": "shx rm -rf dist/modules && tsc -p tsconfig.build.json",
-    "build": "shx rm -rf dist && pnpm run dts && rollup --config rollup.config.js",
+    "dts": "tsc -p tsconfig.build.json",
+    "build": "shx rm -rf dist tsconfig.build.tsbuildinfo && pnpm run dts && rollup --config rollup.config.js",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "test": "vitest",
     "ci": "vitest run --coverage",

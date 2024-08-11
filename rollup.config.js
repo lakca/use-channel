@@ -5,14 +5,13 @@ import { basename, join } from 'path'
 /** @type {import('rollup').RollupOptions[]} */
 const configs = []
 
+const dist = 'dist'
+
 function moduleName(input) {
   return basename(input, '.ts')
 }
-function dtsName(input) {
-  return basename(input, '.ts') + '.d.ts'
-}
 function dtsInput(input) {
-  return join('dist/modules', basename(input, '.ts') + '.d.ts')
+  return join(dist, 'types', basename(input, '.ts') + '.d.ts')
 }
 
 export default [
@@ -22,10 +21,10 @@ export default [
   {
     input,
     output: [{
-      file: `dist/mjs/${moduleName(input)}.mjs`,
+      file: `${dist}/${moduleName(input)}.mjs`,
       format: 'esm',
     }, {
-      file: `dist/cjs/${moduleName(input)}.cjs`,
+      file: `${dist}/${moduleName(input)}.cjs`,
       format: 'cjs',
     }],
     plugins: [
@@ -37,26 +36,15 @@ export default [
   },
   {
     input: dtsInput(input),
-    output: {
-      file: 'dist/mjs/' + dtsName(input),
-      format: 'esm',
-    },
-    plugins: [
-      dts({
-        tsconfig: './tsconfig.build.json',
-      }),
-    ],
-  },
-  {
-    input: dtsInput(input),
-    output: {
-      file: 'dist/cjs/' + dtsName(input),
+    output: [{
+      file: `${dist}/${moduleName(input)}.d.ts`,
       format: 'cjs',
-    },
+    }, {
+      file: `${dist}/${moduleName(input)}.d.mts`,
+      format: 'esm',
+    }],
     plugins: [
-      dts({
-        tsconfig: './tsconfig.build.json',
-      }),
+      dts(),
     ],
   },
 ]), configs)
