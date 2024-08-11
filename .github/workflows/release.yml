@@ -18,22 +18,21 @@ jobs:
       pull-requests: write # to be able to comment on released pull requests
       id-token: write # to enable use of OIDC for npm provenance
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Use Node.js
-        uses: actions/setup-node@v3
+      - uses: pnpm/action-setup@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: lts/*
-      - name: Install dependencies
-        run: npm clean-install
+          cache: 'pnpm'
+      - run: pnpm install
       - name: Verify the integrity of provenance attestations and registry signatures for installed dependencies
-        run: npm audit signatures
+        run: pnpm audit signatures
       - name: Test
-        run: npm run ci
+        run: pnpm run ci
       - name: Build
-        run: npm run build
+        run: pnpm run build
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
