@@ -62,6 +62,7 @@
   },
   "homepage": "https://github.com/lakca/use-channel",
   "release": {
+    "repositoryUrl": "git@github.com:lakca/use-channel.git",
     "branches": [ "main", "release/*" ],
     "plugins": [
       "@semantic-release/commit-analyzer",
