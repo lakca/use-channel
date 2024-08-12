@@ -126,7 +126,7 @@ function useChannelState<T extends Listeners, N extends StateKeys<T, U>, U exten
   }, [channel, dispatchName, options.dispatch, value])
 
   return {
-    [`${name}`]: noValue(value) ? undefined : value,
+    [`${name}`]: noValue(value) ? initialized ? initialState : undefined : value,
     [`set${upperFirst(name)}`]: setValue,
   } as NamedChannelBind<T, N, U>
 }
