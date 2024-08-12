@@ -6,8 +6,10 @@ import { Disposal } from './Disposal'
 import { GC } from './GC'
 import { TwoWayState } from './TwoWayState'
 import { InYourControl } from './InYourControl'
+import { Starter } from './Starter'
 
 const components = [
+  Starter,
   ReverseState,
   TwoWayState,
   InYourControl,

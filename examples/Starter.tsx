@@ -1,35 +1,5 @@
-# use-channel
+import { Channel, TwoWayChannel, useChannel, useChannelExternalState, useChannelExternalStateSync, useChannelSourceState, useChannelSourceStateSync } from 'use-channel'
 
-> Easy two-way state and no complexity growth in cross levels. Zero-Dependency & Intuitive API & Fully Typed.
-
-[![codecov](https://codecov.io/github/lakca/use-channel/graph/badge.svg?token=thMJZOUXn7)](https://codecov.io/github/lakca/use-channel)
-
-> 为了简化数据逆向传递及数据跨级穿透传递，建立了通道事件模型。该模型内，不显式关心数据传递的方向，而是以数据源和数据受体为核心建立数据流。
-- 正向事件，即由事件源组件传递到事件接受组件，以`on`开头，例如`onChangeSearch`。
-- 逆向事件，即由事件接受组件传递到事件源组件，以`$on`开头，例如`$onChangeSearch`。
-- 为了简化，你可以借助帮助类型`TwoWayChannel`进行定义。
-- 提供`useChannelState`等[快捷方法](#api)，避免凌乱的事件调用。
-
-> In order to simplify the reverse transmission of data and the transmission of data across layers, a channel event model is established. In this
-model, the direction of data transmission is not explicitly concerned, but the data flow is established with the data source and data receptor
-as the core.
-- Forward events, that is, events transmitted from the event source component to the event receiving component, start with `on`, such as `onChangeSearch`.
-- Reverse events, that is, events transmitted from the event receiving component to the event source component, start with `$on`, such as `$onChangeSearch`.
-- For simplicity, you can define with the help of the help type `TwoWayChannel`.
-- Provide [helper hooks](#api) such as `useChannelState` to avoid messy event calls.
-
-```typescript
-type MyChannel<D> = TwoWayChannel<{
- onChangeValue: (value: string) => void
- // + $onChangeValue: (value: string) => void
-}>
-```
-
-## Demo
-
-> See [examples: Starter](examples/Starter.tsx)
-
-```typescript
 // for type checks (intellisense)
 type CounterChannel = TwoWayChannel<{
   onChangeCount: (count: number) => void
@@ -100,39 +70,3 @@ export function Counter({ channel: rcvChannel }: { channel: Channel<CounterChann
     </>
   )
 }
-```
-
-## API
-
-> See details in [`core.ts`](src/core.ts)
-
-```typescript
-type TwoWayChannel<T>
-type TwoWayChannel<T, K>
-
-type ChannelStateType
-
-type PropsWithChannel<T, P>
-
-useChannel(ChannelName?:string): Channel
-
-channel.connect(channel:Channel): Channel // typed-optimized
-
-useChannelSourceState(channel:Channel, name:string, initialValue?)
-
-useChannelSourceStateSync(channel:Channel, name:string, initialValue?)
-
-useChannelExternalState(channel:Channel, name:string, initialValue?)
-
-useChannelExternalStateSync(channel:Channel, name:string, initialValue?)
-
-useChannelState(type:ChannelStateType channel:Channel, name:string, initialValue?)
-```
-
-## Details
-
-See [demo](http://longpeng.me/use-channel/) / [examples](examples) OR clone the repo and  `pnpm install && pnpm run dev`
-
-## LICENSE
-
-MIT
