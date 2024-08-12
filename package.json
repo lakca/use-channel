@@ -1,7 +1,7 @@
 {
   "name": "use-channel",
   "description": "Take over state transmission in React.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "main": "./dist/core.cjs",
   "module": "./dist/core.mjs",
@@ -63,7 +63,10 @@
   "homepage": "https://github.com/lakca/use-channel",
   "release": {
     "repositoryUrl": "git@github.com:lakca/use-channel.git",
-    "branches": [ "main", "release/*" ],
+    "branches": [
+      "main",
+      "release/*"
+    ],
     "plugins": [
       "@semantic-release/commit-analyzer",
       "@semantic-release/release-notes-generator",
