@@ -88,7 +88,7 @@ function noValue(value: any) {
 
 type Options = { notSyncInitial: boolean, listen: boolean, dispatch: boolean }
 
-function useChannelState<T extends Listeners, N extends StateKeys<T, U>, U extends typeof SourcePrefix | typeof ExternalPrefix>(channel: Channel<T>, name: N, listenName: string, dispatchName: string, initialValue: any, options: Options): NamedChannelBind<T, N, U> {
+function _useChannelState<T extends Listeners, N extends StateKeys<T, U>, U extends typeof SourcePrefix | typeof ExternalPrefix>(channel: Channel<T>, name: N, listenName: string, dispatchName: string, initialValue: any, options: Options): NamedChannelBind<T, N, U> {
   const initialValueRef = useRef(initialValue)
 
   const [initialState, initialized] = useMemo(() => {
@@ -131,6 +131,42 @@ function useChannelState<T extends Listeners, N extends StateKeys<T, U>, U exten
   } as NamedChannelBind<T, N, U>
 }
 
+export type ChannelStateType = 'Source' | 'External' | 'SourceSync' | 'ExternalSync'
+
+function getStateConfig<N extends string>(type: ChannelStateType, name: N) {
+  switch (type) {
+    case 'Source':
+      return {
+        listenerName: getStateEventName(ExternalPrefix, name),
+        dispatchName: getStateEventName(SourcePrefix, name),
+        options: { listen: false, dispatch: true },
+      }
+    case 'SourceSync':
+      return {
+        listenerName: getStateEventName(ExternalPrefix, name),
+        dispatchName: getStateEventName(SourcePrefix, name),
+        options: { listen: true, dispatch: true },
+      }
+    case 'External':
+      return {
+        listenerName: getStateEventName(SourcePrefix, name),
+        dispatchName: getStateEventName(ExternalPrefix, name),
+        options: { listen: true, dispatch: false },
+      }
+    case 'ExternalSync':
+      return {
+        listenerName: getStateEventName(SourcePrefix, name),
+        dispatchName: getStateEventName(ExternalPrefix, name),
+        options: { listen: true, dispatch: true },
+      }
+  }
+}
+
+export function useChannelState<T extends Listeners, N extends StateKeys<T, typeof SourcePrefix>>(type: ChannelStateType, channel: Channel<T>, name: N, initialValue: StateValue<T, N, typeof SourcePrefix> = new DefaultValue(), notSyncInitial = false): NamedChannelBind<T, N, typeof SourcePrefix> {
+  const { listenerName, dispatchName, options } = getStateConfig(type, name)
+  return _useChannelState(channel, name, listenerName, dispatchName, initialValue, { ...options, notSyncInitial })
+}
+
 /**
  * Source State, only sync state to external.
  *
@@ -144,7 +180,7 @@ function useChannelState<T extends Listeners, N extends StateKeys<T, U>, U exten
  * ```
  */
 export function useChannelSourceState<T extends Listeners, N extends StateKeys<T, typeof SourcePrefix>>(channel: Channel<T>, name: N, initialValue: StateValue<T, N, typeof SourcePrefix> = new DefaultValue(), notSyncInitial = false): NamedChannelBind<T, N, typeof SourcePrefix> {
-  return useChannelState(channel, name, getStateEventName(ExternalPrefix, name), getStateEventName(SourcePrefix, name), initialValue, { notSyncInitial, listen: false, dispatch: true })
+  return useChannelState('Source', channel, name, initialValue, notSyncInitial)
 }
 
 /**
@@ -160,7 +196,7 @@ export function useChannelSourceState<T extends Listeners, N extends StateKeys<T
  * ```
  */
 export function useChannelExternalState<T extends Listeners, N extends StateKeys<T, typeof SourcePrefix>>(channel: Channel<T>, name: N, initialValue: StateValue<T, N, typeof SourcePrefix> = new DefaultValue(), notSyncInitial = false): NamedChannelBind<T, N, typeof SourcePrefix> {
-  return useChannelState(channel, name, getStateEventName(SourcePrefix, name), getStateEventName(ExternalPrefix, name), initialValue, { notSyncInitial, listen: true, dispatch: false })
+  return useChannelState('External', channel, name, initialValue, notSyncInitial)
 }
 
 /**
@@ -176,7 +212,7 @@ export function useChannelExternalState<T extends Listeners, N extends StateKeys
  * ```
  */
 export function useChannelSourceStateSync<T extends Listeners, N extends StateKeys<T, typeof SourcePrefix> & StateKeys<T, typeof ExternalPrefix>>(channel: Channel<T>, name: N, initialValue: StateValue<T, N, typeof SourcePrefix> = new DefaultValue(), notSyncInitial = false): NamedChannelBind<T, N, typeof SourcePrefix> {
-  return useChannelState(channel, name, getStateEventName(ExternalPrefix, name), getStateEventName(SourcePrefix, name), initialValue, { notSyncInitial, listen: true, dispatch: true })
+  return useChannelState('SourceSync', channel, name, initialValue, notSyncInitial)
 }
 
 /**
@@ -192,7 +228,7 @@ export function useChannelSourceStateSync<T extends Listeners, N extends StateKe
  * ```
  */
 export function useChannelExternalStateSync<T extends Listeners, N extends StateKeys<T, typeof ExternalPrefix> & StateKeys<T, typeof SourcePrefix>>(channel: Channel<T>, name: N, initialValue: StateValue<T, N, typeof ExternalPrefix> = new DefaultValue(), notSyncInitial = false): NamedChannelBind<T, N, typeof ExternalPrefix> {
-  return useChannelState(channel, name, getStateEventName(SourcePrefix, name), getStateEventName(ExternalPrefix, name), initialValue, { notSyncInitial, listen: true, dispatch: true })
+  return useChannelState('ExternalSync', channel, name, initialValue, notSyncInitial)
 }
 
 export class Channel<T extends Listeners> {
