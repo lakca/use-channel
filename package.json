@@ -8,16 +8,40 @@
   "types": "./dist/core.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/core.mjs",
-      "require": "./dist/core.cjs",
-      "node": "./dist/core.cjs",
-      "default": "./dist/core.cjs"
+      "import": {
+        "types": "./dist/core.d.ts",
+        "default": "./dist/core.mjs"
+      },
+      "require": {
+        "types": "./dist/core.d.ts",
+        "default": "./dist/core.cjs"
+      },
+      "node": {
+        "types": "./dist/core.d.ts",
+        "default": "./dist/core.cjs"
+      },
+      "default": {
+        "types": "./dist/core.d.ts",
+        "default": "./dist/core.cjs"
+      }
     },
     "./*": {
-      "import": "./dist/*.mjs",
-      "require": "./dist/*.cjs",
-      "node": "./dist/*.cjs",
-      "default": "./dist/*.cjs"
+      "import": {
+        "types": "./dist/*.d.ts",
+        "default": "./dist/*.mjs"
+      },
+      "require": {
+        "types": "./dist/*.d.ts",
+        "default": "./dist/*.cjs"
+      },
+      "node": {
+        "types": "./dist/*.d.ts",
+        "default": "./dist/*.cjs"
+      },
+      "default": {
+        "types": "./dist/*.d.ts",
+        "default": "./dist/*.cjs"
+      }
     }
   },
   "files": [
@@ -98,7 +122,6 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "rollup": "^4.20.0",
-    "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-esbuild": "^6.1.1",
     "semantic-release": "^24.0.0",
     "shx": "^0.3.4",

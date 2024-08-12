@@ -2,7 +2,9 @@
 
 > Easy two-way state and no complexity growth in cross levels. Zero-Dependency & Intuitive API & Fully Typed.
 
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/lakca/use-channel/test.yml)
 [![codecov](https://codecov.io/github/lakca/use-channel/graph/badge.svg?token=thMJZOUXn7)](https://codecov.io/github/lakca/use-channel)
+![NPM Version](https://img.shields.io/npm/v/use-channel)
 
 > 为了简化数据逆向传递及数据跨级穿透传递，建立了通道事件模型。该模型内，不显式关心数据传递的方向，而是以数据源和数据受体为核心建立数据流。
 - 正向事件，即由事件源组件传递到事件接受组件，以`on`开头，例如`onChangeSearch`。
