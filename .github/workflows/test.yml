@@ -24,7 +24,7 @@ jobs:
         node-version: lts/*
         cache: 'pnpm'
     - run: pnpm install
-    - run: pnpm run ci
+    - run: pnpm run test:ci
     - name: Upload test results to Codecov
       if: ${{ !cancelled() }}
       uses: codecov/test-results-action@v1

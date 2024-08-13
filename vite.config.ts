@@ -4,6 +4,8 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
+const { USE_BUILT } = process.env
+
 // https://vitejs.dev/config/
 export default defineConfig({
   base: '',
@@ -11,7 +13,9 @@ export default defineConfig({
     outDir: 'static',
   },
   plugins: [
-    tsconfigPaths(),
+    tsconfigPaths({
+      configNames: USE_BUILT ? ['tsconfig.built.json'] : ['tsconfig.json'],
+    }),
     react(),
   ],
   test: {
@@ -23,7 +27,8 @@ export default defineConfig({
     },
     coverage: {
       reporter: ['text', 'json', 'html', 'text-summary'],
-      include: ['src/**'],
+      include: USE_BUILT ? ['dist/**/*.mjs'] : ['src'],
+      exclude: ['!dist'],
       allowExternal: false,
     },
   },

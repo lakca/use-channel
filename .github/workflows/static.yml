@@ -39,7 +39,7 @@ jobs:
           node-version: '18'
           cache: 'pnpm'
       - run: pnpm install
-      - run: pnpm run static
+      - run: pnpm run build:static
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact

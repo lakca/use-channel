@@ -52,14 +52,16 @@
     "LICENSE"
   ],
   "scripts": {
-    "dev": "vite",
-    "static": "vite build",
-    "dts": "tsc -p tsconfig.build.json",
-    "build": "shx rm -rf dist tsconfig.build.tsbuildinfo && pnpm run dts && rollup --config rollup.config.js",
+    "dev": "vite --open && pnpm run test:ui",
+    "clean": "shx rm -rf coverage html dist junit.xml tsconfig.build.tsbuildinfo",
+    "test": "pnpm run clean && vitest",
+    "test:ui": "pnpm run clean && vitest --ui --coverage",
+    "test:built": "pnpm run clean && pnpm run build && USE_BUILT=1 vitest run --coverage",
+    "test:ci": "vitest run --coverage",
+    "release": "pnpm run test:ci && pnpm run test:built",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "test": "vitest",
-    "ci": "vitest run --coverage",
-    "ui": "vitest --ui --coverage",
+    "build": "pnpm run clean && tsc -p tsconfig.build.json && rollup --config rollup.config.js",
+    "build:static": "shx rm -rf static && vite build",
     "prepare": "husky"
   },
   "husky": {
