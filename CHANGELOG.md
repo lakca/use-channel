@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/lakca/use-channel/compare/v1.0.2...v1.0.3) (2024-08-13)
+
+
+### Bug Fixes
+
+* **build:** change build orders. ([1f9ee5a](https://github.com/lakca/use-channel/commit/1f9ee5ad433846cdc9f46d3cc0e7c3e206ae26df))
+
 ## [1.0.2](https://github.com/lakca/use-channel/compare/v1.0.1...v1.0.2) (2024-08-12)
 
 
