@@ -1,3 +1,15 @@
+# [1.1.0](https://github.com/lakca/use-channel/compare/v1.0.3...v1.1.0) (2024-08-13)
+
+
+### Bug Fixes
+
+* **core:** collect listeners ([3f2c605](https://github.com/lakca/use-channel/commit/3f2c60537dfc2851065a6ff767deb308943b17a2))
+
+
+### Features
+
+* **test:** test built materials [skip ci] ([cba2362](https://github.com/lakca/use-channel/commit/cba236209236a39bac8d67f8481dbee7e7e7e6ab))
+
 ## [1.0.3](https://github.com/lakca/use-channel/compare/v1.0.2...v1.0.3) (2024-08-13)
 
 
