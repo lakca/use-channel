@@ -6,8 +6,8 @@ const configs = []
 const dist = 'dist'
 
 export default [
-  'src/core.ts',
   'src/valtio.ts',
+  'src/core.ts',
 ].reduce((r, input) => r.concat([
   {
     input,
