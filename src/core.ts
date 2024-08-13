@@ -253,19 +253,18 @@ export class Channel<T extends Listeners> {
   private getForwards(name: keyof T, touches: Set<Channel<any>> = new Set()) {
     const listeners = [...this.listeners[name] || []]
     touches.add(this)
-    this.forwards.forEach(e => touches.has(e) || listeners.push(...e.getForwards(name, touches)))
+    this.forwards.forEach(e => touches.has(e) || listeners.push(...e.getListeners(name, touches)))
     return listeners
   }
 
   private getBackwards(name: keyof T, touches: Set<Channel<any>> = new Set()) {
     const listeners = [...this.listeners[name] || []]
     touches.add(this)
-    this.backwards.forEach(e => touches.has(e) || listeners.push(...e.getBackwards(name, touches)))
+    this.backwards.forEach(e => touches.has(e) || listeners.push(...e.getListeners(name, touches)))
     return listeners
   }
 
-  private getListeners(name: keyof T) {
-    const touches: Set<Channel<any>> = new Set()
+  private getListeners(name: keyof T, touches: Set<Channel<any>> = new Set()) {
     return this.getForwards(name, touches).concat(this.getBackwards(name, touches))
   }
 

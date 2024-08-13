@@ -7,6 +7,7 @@ import { GC } from './GC'
 import { TwoWayState } from './TwoWayState'
 import { InYourControl } from './InYourControl'
 import { Starter } from './Starter'
+import { Siblings } from './Siblings'
 
 const components = [
   Starter,
@@ -16,6 +17,7 @@ const components = [
   ChannelNet,
   Disposal,
   GC,
+  Siblings,
 ] as unknown as (FC & { componentName: string })[]
 
 export function App() {
