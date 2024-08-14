@@ -64,9 +64,12 @@
     "build:static": "shx rm -rf static && vite build",
     "prepare": "husky"
   },
+  "lint-staged": {
+    "*.ts": "eslint . --fix"
+  },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "lint-staged && pnpm run test"
     }
   },
   "repository": {

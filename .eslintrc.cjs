@@ -8,7 +8,7 @@ module.exports = {
     'plugin:@stylistic/disable-legacy',
     'plugin:@stylistic/recommended-extends',
   ],
-  ignorePatterns: ['dist', '.eslintrc.cjs'],
+  ignorePatterns: ['node_modules', 'dist', 'coverage', 'dist', 'html', 'static', '.eslintrc.cjs'],
   parser: '@typescript-eslint/parser',
   plugins: ['react-refresh'],
   rules: {
