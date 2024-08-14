@@ -10,7 +10,8 @@
 - 正向事件，即由事件源组件传递到事件接受组件，以`on`开头，例如`onChangeSearch`。
 - 逆向事件，即由事件接受组件传递到事件源组件，以`$on`开头，例如`$onChangeSearch`。
 - 为了简化，你可以借助帮助类型`TwoWayChannel`进行定义。
-- 提供`useChannelState`等[快捷方法](#api)，避免凌乱的事件调用。
+- 提供`useChannelState`等[状态钩子](#api)，避免凌乱的事件调用。
+- 提供[工具](#connect-with-state-management)与[`valtio`](https://www.npmjs.com/package/valtio)等状态库进行状态同步（欢迎提交其他状态库[PR](https://github.com/lakca/use-channel/pulls)）。
 
 > In order to simplify the reverse transmission of data and the transmission of data across layers, a channel event model is established. In this
 model, the direction of data transmission is not explicitly concerned, but the data flow is established with the data source and data receptor
@@ -18,7 +19,8 @@ as the core.
 - Forward events, that is, events transmitted from the event source component to the event receiving component, start with `on`, such as `onChangeSearch`.
 - Reverse events, that is, events transmitted from the event receiving component to the event source component, start with `$on`, such as `$onChangeSearch`.
 - For simplicity, you can define with the help of the help type `TwoWayChannel`.
-- Provide [helper hooks](#api) such as `useChannelState` to avoid messy event calls.
+- Provide [hooks](#api) such as `useChannelState` to avoid messy event calls.
+- Provide [utilities](#connect-with-state-management) to synchronize with state management such as [`valtio`](https://www.npmjs.com/package/valtio)([PRs](https://github.com/lakca/use-channel/pulls) for others are welcome).
 
 ```typescript
 type MyChannel<D> = TwoWayChannel<{
@@ -27,7 +29,7 @@ type MyChannel<D> = TwoWayChannel<{
 }>
 ```
 
-## Demo
+## Usage
 
 > See [examples: Starter](examples/Starter.tsx)
 
@@ -104,6 +106,10 @@ export function Counter({ channel: rcvChannel }: { channel: Channel<CounterChann
 }
 ```
 
+## Examples & Details
+
+See [examples](examples)' [demo](http://longpeng.me/use-channel/) OR clone the repo and  `pnpm install && pnpm run dev`
+
 ## API
 
 > See details in [`core.ts`](src/core.ts)
@@ -131,9 +137,17 @@ useChannelExternalStateSync(channel:Channel, name:string, initialValue?)
 useChannelState(type:ChannelStateType channel:Channel, name:string, initialValue?)
 ```
 
-## Details
+## Connect with State Management
 
-See [demo](http://longpeng.me/use-channel/) / [examples](examples) OR clone the repo and  `pnpm install && pnpm run dev`
+### valtio
+
+```typescript
+import { useChannelValtio } from 'use-channel/valtio'
+// followings are equivalent:
+useChannelValtio(channel, store, ['count'])
+useChannelValtio(channel, store, [['count', 'count']]) // channel#count -> store.count
+useChannelValtio(channel, store, [['count', 'count', { subscribe: true, listen: true }]])
+```
 
 ## LICENSE
 
