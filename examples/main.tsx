@@ -10,17 +10,19 @@ import { Starter } from './Starter'
 import { Siblings } from './Siblings'
 import { Event } from './Event'
 import { InitialValue } from './InitialValue'
+import { ChannelRef } from './Ref'
 
 const components = [
   Starter,
   ReverseState,
   TwoWayState,
-  InYourControl,
+  Siblings,
+  ChannelRef,
   ChannelNet,
   InitialValue,
+  InYourControl,
   Disposal,
   GC,
-  Siblings,
   Event,
 ] as unknown as (FC & { componentName: string })[]
 

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from 'react'
+import { Dispatch, MutableRefObject, SetStateAction, useEffect, useMemo, useRef, useState } from 'react'
 import { lowerFirst, upperFirst, useMounted, useOnce } from './utils'
 
 type OmitNever<T> = { [k in keyof T as [T[k]] extends [never] ? never : k]: T[k] }
@@ -192,6 +192,13 @@ function getStateConfig<K extends ChannelStateType, N extends string>(type: K, n
   }
 }
 
+/**
+ * Prefer to use standalone hooks:
+ * - {@link useChannelSourceState}
+ * - {@link useChannelSourceStateSync}
+ * - {@link useChannelExternalState}
+ * - {@link useChannelExternalStateSync}
+ */
 export function useChannelState<T extends Listeners, K extends ChannelStateType, N extends ChannelStateName<T, K>>(type: K, channel: Channel<T>, name: N, initialValue: StateValue<T, N, typeof SourcePrefix> = NONE, notSyncInitial = false): NamedChannelBind<T, N, typeof SourcePrefix> {
   const { listenerName, dispatchName, options } = getStateConfig(type, name)!
   return _useChannelState(channel, name, listenerName, dispatchName, initialValue, { ...options, notSyncInitial })
@@ -259,6 +266,52 @@ export function useChannelSourceStateSync<T extends Listeners, N extends Channel
  */
 export function useChannelExternalStateSync<T extends Listeners, N extends ChannelStateName<T, 'ExternalSync'>>(channel: Channel<T>, name: N, initialValue: StateValue<T, N, typeof ExternalPrefix> = NONE, notSyncInitial = false): NamedChannelBind<T, N, typeof ExternalPrefix> {
   return useChannelState('ExternalSync', channel, name, initialValue, notSyncInitial)
+}
+
+type RefOptions = {
+  /** whether dispatch event when current changed. */
+  dispatch?: boolean
+  /** whether is source ref, i.e. listen `$onChange` instead of `onChange`. It's usually uncommon to set this option */
+  source?: boolean
+}
+
+/**
+ * Ref instead of State.
+ *
+ * Typically used as an alternative to *passing a ref*, to proactively get the internal state of other components. The difference from state is no rerendering triggered.
+ *
+ * ```typescript
+ * // followings are equivalent:
+ * useChannelRef(channel, 'value')
+ * useChannelRef(channel, 'value', { dispatch: false })
+ * useChannelRef(channel, 'value', { dispatch: false, source: false })
+ * ```
+ */
+export function useChannelRef<T extends Listeners, N extends StateKeys<T, U>, U extends typeof SourcePrefix | typeof ExternalPrefix>(channel: Channel<T>, name: N, options?: RefOptions) {
+  options = { dispatch: false, source: false, ...options }
+  const ref = useRef<StateValue<T, N, U>>()
+  const listenName = getStateEventName(options.source ? ExternalPrefix : SourcePrefix, name)
+  const dispatchName = getStateEventName(options.source ? SourcePrefix : ExternalPrefix, name)
+
+  const refProxy = useMemo<MutableRefObject<StateValue<T, N, U>>>(() => Object.create(null, {
+    current: {
+      get() {
+        return ref.current
+      },
+      set(v: StateValue<T, N, U>) {
+        ref.current = v
+        options.dispatch && (channel.send as any)(dispatchName, v)
+      },
+    },
+  }), [channel.send, dispatchName, options.dispatch])
+
+  useEffect(() => {
+    channel.listen(listenName, ((v: any) => {
+      ref.current = v
+    }) as any)
+  }, [channel, listenName])
+
+  return refProxy
 }
 
 export class Channel<T extends Listeners, S extends string = typeof SourcePrefix, E extends string = typeof ExternalPrefix> {

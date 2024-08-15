@@ -1,0 +1,36 @@
+import { it } from 'vitest'
+import { fireEvent, render } from '@testing-library/react'
+import { ChannelRef } from 'examples/Ref'
+
+it('ChannelRef', async () => {
+  const { findByText, getByText, unmount } = render(<ChannelRef />)
+
+  await findByText('Parent Channel:')
+  await findByText('SiblingOne Channel: 0')
+  await findByText('SiblingTwo Channel:')
+  fireEvent.click(getByText('SiblingOne + 1'))
+  await findByText('Parent Channel:')
+  await findByText('SiblingOne Channel: 1')
+  await findByText('SiblingTwo Channel:')
+  fireEvent.click(getByText('SiblingTwo Get'))
+  await findByText('Parent Channel:')
+  await findByText('SiblingOne Channel: 1')
+  await findByText('SiblingTwo Channel: 1')
+  fireEvent.click(getByText('SiblingOne + 1'))
+  await findByText('Parent Channel:')
+  await findByText('SiblingOne Channel: 2')
+  await findByText('SiblingTwo Channel: 1')
+  fireEvent.click(getByText('App Get'))
+  await findByText('Parent Channel: 2')
+  await findByText('SiblingOne Channel: 2')
+  await findByText('SiblingTwo Channel: 2')
+  fireEvent.click(getByText('SiblingTwo + 1'))
+  await findByText('Parent Channel: 2')
+  await findByText('SiblingOne Channel: 3')
+  await findByText('SiblingTwo Channel: 2')
+  fireEvent.click(getByText('SiblingTwo Get'))
+  await findByText('Parent Channel: 2')
+  await findByText('SiblingOne Channel: 3')
+  await findByText('SiblingTwo Channel: 3')
+  unmount()
+})
