@@ -8,6 +8,9 @@ import { TwoWayState } from './TwoWayState'
 import { InYourControl } from './InYourControl'
 import { Starter } from './Starter'
 import { Siblings } from './Siblings'
+import { ChannelRef } from './Ref'
+import { Event } from './Event'
+import { ConnectValtio } from './Valtio'
 
 const components = [
   Starter,
@@ -18,6 +21,8 @@ const components = [
   Disposal,
   GC,
   Siblings,
+  Event,
+  ConnectValtio,
 ] as unknown as (FC & { componentName: string })[]
 
 export function App() {

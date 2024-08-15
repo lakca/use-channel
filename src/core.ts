@@ -251,21 +251,21 @@ export class Channel<T extends Listeners> {
   }
 
   private getForwards(name: keyof T, touches: Set<Channel<any>> = new Set()) {
-    const listeners = [...this.listeners[name] || []]
+    const listeners: Listener[] = []
     touches.add(this)
     this.forwards.forEach(e => touches.has(e) || listeners.push(...e.getListeners(name, touches)))
     return listeners
   }
 
   private getBackwards(name: keyof T, touches: Set<Channel<any>> = new Set()) {
-    const listeners = [...this.listeners[name] || []]
+    const listeners: Listener[] = []
     touches.add(this)
     this.backwards.forEach(e => touches.has(e) || listeners.push(...e.getListeners(name, touches)))
     return listeners
   }
 
   private getListeners(name: keyof T, touches: Set<Channel<any>> = new Set()) {
-    return this.getForwards(name, touches).concat(this.getBackwards(name, touches))
+    return (this.listeners[name] || []).concat(this.getForwards(name, touches).concat(this.getBackwards(name, touches)))
   }
 
   snapshot<N extends keyof T>(name: N): Parameters<T[N]> | DefaultValue {
