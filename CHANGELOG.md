@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/lakca/use-channel/compare/v1.1.0...v1.1.1) (2024-08-15)
+
+
+### Bug Fixes
+
+* **core:** remove repeatedly added `this` listeners when dispatch listeners ([059cff8](https://github.com/lakca/use-channel/commit/059cff8ef2d851e554e7b5bb8edab6b54e547e59))
+
 # [1.1.0](https://github.com/lakca/use-channel/compare/v1.0.3...v1.1.0) (2024-08-13)
 
 
