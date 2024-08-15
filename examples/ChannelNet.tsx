@@ -66,6 +66,8 @@ export function Child({ channel: rcvChannel }: { channel: Channel<ParentChannel 
      *
      * Warn: This is only guarded by types check, do not abuse.
      */
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   useChannelExternalStateSync(channel, 'middle') // Argument of type '"middle"' is not assignable to parameter of type '"parent" | "child"'.ts(2345)
 
   /** Use *receptor* instead: */
