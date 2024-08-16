@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/lakca/use-channel/compare/v1.1.1...v1.1.2) (2024-08-16)
+
+
+### Bug Fixes
+
+* **initialState:** Get initial state through state name (instead of event name), and traverse all connections to retrieve already set initialState ([51a2a6e](https://github.com/lakca/use-channel/commit/51a2a6eae6ca2f83deca013425ad22ccf3f7ae34))
+
 ## [1.1.1](https://github.com/lakca/use-channel/compare/v1.1.0...v1.1.1) (2024-08-15)
 
 

@@ -1,7 +1,7 @@
 {
   "name": "use-channel",
   "description": "Take over state transmission in React.",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "type": "module",
   "main": "./dist/core.cjs",
   "module": "./dist/core.mjs",
