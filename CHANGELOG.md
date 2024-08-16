@@ -1,3 +1,11 @@
+# [1.2.0](https://github.com/lakca/use-channel/compare/v1.1.2...v1.2.0) (2024-08-16)
+
+
+### Features
+
+* **ref:** add useChannelRef ([c718775](https://github.com/lakca/use-channel/commit/c718775fb420ae490fef4f09521b37524ee9f15d))
+* **valtio:** utility to valtio. ([50bf662](https://github.com/lakca/use-channel/commit/50bf662a99d1a3a8c20816f7afe9691bee02affb))
+
 ## [1.1.2](https://github.com/lakca/use-channel/compare/v1.1.1...v1.1.2) (2024-08-16)
 
 
