@@ -9,6 +9,7 @@ import { InYourControl } from './InYourControl'
 import { Starter } from './Starter'
 import { Siblings } from './Siblings'
 import { Event } from './Event'
+import { InitialValue } from './InitialValue'
 
 const components = [
   Starter,
@@ -16,6 +17,7 @@ const components = [
   TwoWayState,
   InYourControl,
   ChannelNet,
+  InitialValue,
   Disposal,
   GC,
   Siblings,
@@ -24,12 +26,16 @@ const components = [
 
 export function App() {
   const [id, setName] = useState<number>(0)
+  const [toggle, setToggle] = useState(1)
   const Component = components[id]
   return (
     <>
       {components.map((e, i) => <button key={i} onClick={() => setName(i)}>{e.componentName}</button>)}
+      <hr />
+      <button onClick={() => setToggle(v => v + 1)}>Reload</button>
+      <hr />
       <h1>{components[id].componentName}</h1>
-      <Component />
+      <Component key={toggle} />
     </>
   )
 }

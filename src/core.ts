@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from 'react'
-import { upperFirst, useOnce } from './utils'
+import { lowerFirst, upperFirst, useMounted, useOnce } from './utils'
 
 type OmitNever<T> = { [k in keyof T as [T[k]] extends [never] ? never : k]: T[k] }
 
@@ -58,6 +58,12 @@ export function useChannel<T extends Listeners = NonNullable<unknown>>(name?: st
   return channel
 }
 
+export type ChannelStateEventName<T extends Listeners, S extends string = typeof SourcePrefix, E extends string = typeof ExternalPrefix> = keyof {
+  [k in StateKeys<T, S> as `${S}${Capitalize<k>}`]: null
+} | keyof {
+  [k in StateKeys<T, E> as `${E}${Capitalize<k>}`]: null
+}
+
 export type StateKey<K extends string, U extends string> = K extends `${U}${infer P}` ? Uncapitalize<P> : never
 
 export type StateValue<T extends Listeners, N extends string, U extends string> = Parameters<T[StateEventName<U, N>]>[0]
@@ -80,53 +86,71 @@ export function getStateEventName<U extends string, N extends string>(prefix: U,
   return `${prefix}${upperFirst(name)}` as const
 }
 
-class DefaultValue {}
-
-function noValue(value: any) {
-  return value instanceof DefaultValue
+export function getEventStateName<U extends string, E extends string>(prefix: U, name: E) {
+  return name.startsWith(prefix) ? lowerFirst(name.slice(prefix.length)) as StateKey<E, U> : null
 }
 
-type Options = { notSyncInitial: boolean, listen: boolean, dispatch: boolean }
+class Singleton {}
+
+export const NONE = new Singleton()
+
+function noValue(value: any | typeof NONE): value is typeof NONE {
+  return value === NONE
+}
+
+type Options = {
+  /** Initialize state does not count on connected channels, also will not emit initial state to connected channels. */
+  notSyncInitial: boolean
+  listen: boolean
+  dispatch: boolean
+}
 
 function _useChannelState<T extends Listeners, N extends StateKeys<T, U>, U extends typeof SourcePrefix | typeof ExternalPrefix>(channel: Channel<T>, name: N, listenName: string, dispatchName: string, initialValue: any, options: Options): NamedChannelBind<T, N, U> {
-  const initialValueRef = useRef(initialValue)
+  initialValue = useRef(initialValue).current
+  options = useRef(options).current
+  const mounted = useMounted()
 
-  const [initialState, initialized] = useMemo(() => {
+  const [initialState, shouldDispatchInitialState] = useOnce(() => {
+    if (options.notSyncInitial) {
+      return [noValue(initialValue) ? undefined : initialValue, false]
+    }
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const snapshots = channel.snapshots as any
-    const value = initialValueRef.current
-    const snapshot = channel.snapshot(listenName)
-    const initial = !noValue(value)
+    const snapshot = channel.snapshot(name)
+    const initial = !noValue(initialValue)
     const offered = !noValue(snapshot)
 
     if (initial && !offered) {
-      snapshots[dispatchName] = [value]
+      snapshots[name] = [initialValue]
     }
-    if (initial) return [value, true]
-    if (offered) return [snapshot[0], true]
+    if (offered) return [snapshot[0], false]
+    if (initial) return [initialValue, true]
     return [undefined, false]
-  }, [channel, dispatchName, listenName])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  })
 
-  const [value, setValue] = useState(new DefaultValue())
-
-  useEffect(() => {
-    initialized && setValue(initialState)
-  }, [initialState, initialized])
+  const [value, setValue] = useState(initialState)
 
   useEffect(() => {
+    // shouldDispatchInitialState && setValue(initialState)
+    shouldDispatchInitialState && options.dispatch && (channel.send as any)(dispatchName, value)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useMemo(() => {
     return options.listen ? channel.listen(listenName, setValue as any) : undefined
   }, [channel, listenName, options.listen])
 
   useEffect(() => {
-    if (noValue(value)) {
-      return
+    if (mounted && options.dispatch) {
+      options.dispatch && (channel.send as any)(dispatchName, value)
     }
-    options.dispatch && (channel.send as any)(dispatchName, value)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channel, dispatchName, options.dispatch, value])
 
   return {
-    [`${name}`]: noValue(value) ? initialized ? initialState : undefined : value,
+    [`${name}`]: value,
     [`set${upperFirst(name)}`]: setValue,
   } as NamedChannelBind<T, N, U>
 }
@@ -168,7 +192,7 @@ function getStateConfig<K extends ChannelStateType, N extends string>(type: K, n
   }
 }
 
-export function useChannelState<T extends Listeners, K extends ChannelStateType, N extends ChannelStateName<T, K>>(type: K, channel: Channel<T>, name: N, initialValue: StateValue<T, N, typeof SourcePrefix> = new DefaultValue(), notSyncInitial = false): NamedChannelBind<T, N, typeof SourcePrefix> {
+export function useChannelState<T extends Listeners, K extends ChannelStateType, N extends ChannelStateName<T, K>>(type: K, channel: Channel<T>, name: N, initialValue: StateValue<T, N, typeof SourcePrefix> = NONE, notSyncInitial = false): NamedChannelBind<T, N, typeof SourcePrefix> {
   const { listenerName, dispatchName, options } = getStateConfig(type, name)!
   return _useChannelState(channel, name, listenerName, dispatchName, initialValue, { ...options, notSyncInitial })
 }
@@ -185,7 +209,7 @@ export function useChannelState<T extends Listeners, K extends ChannelStateType,
  * const { message, setMessage } = useChannelSourceState(channel, 'message')
  * ```
  */
-export function useChannelSourceState<T extends Listeners, N extends ChannelStateName<T, 'Source'>>(channel: Channel<T>, name: N, initialValue: StateValue<T, N, typeof SourcePrefix> = new DefaultValue(), notSyncInitial = false): NamedChannelBind<T, N, typeof SourcePrefix> {
+export function useChannelSourceState<T extends Listeners, N extends ChannelStateName<T, 'Source'>>(channel: Channel<T>, name: N, initialValue: StateValue<T, N, typeof SourcePrefix> = NONE, notSyncInitial = false): NamedChannelBind<T, N, typeof SourcePrefix> {
   return useChannelState('Source', channel, name, initialValue, notSyncInitial)
 }
 
@@ -201,7 +225,7 @@ export function useChannelSourceState<T extends Listeners, N extends ChannelStat
  * const { message, setMessage } = useChannelExternalState(channel, 'message')
  * ```
  */
-export function useChannelExternalState<T extends Listeners, N extends ChannelStateName<T, 'External'>>(channel: Channel<T>, name: N, initialValue: StateValue<T, N, typeof SourcePrefix> = new DefaultValue(), notSyncInitial = false): NamedChannelBind<T, N, typeof SourcePrefix> {
+export function useChannelExternalState<T extends Listeners, N extends ChannelStateName<T, 'External'>>(channel: Channel<T>, name: N, initialValue: StateValue<T, N, typeof SourcePrefix> = NONE, notSyncInitial = false): NamedChannelBind<T, N, typeof SourcePrefix> {
   return useChannelState('External', channel, name, initialValue, notSyncInitial)
 }
 
@@ -217,7 +241,7 @@ export function useChannelExternalState<T extends Listeners, N extends ChannelSt
  * const { message, setMessage } = useChannelSourceStateSync(channel, 'message')
  * ```
  */
-export function useChannelSourceStateSync<T extends Listeners, N extends ChannelStateName<T, 'SourceSync'>>(channel: Channel<T>, name: N, initialValue: StateValue<T, N, typeof SourcePrefix> = new DefaultValue(), notSyncInitial = false): NamedChannelBind<T, N, typeof SourcePrefix> {
+export function useChannelSourceStateSync<T extends Listeners, N extends ChannelStateName<T, 'SourceSync'>>(channel: Channel<T>, name: N, initialValue: StateValue<T, N, typeof SourcePrefix> = NONE, notSyncInitial = false): NamedChannelBind<T, N, typeof SourcePrefix> {
   return useChannelState('SourceSync', channel, name, initialValue, notSyncInitial)
 }
 
@@ -233,15 +257,15 @@ export function useChannelSourceStateSync<T extends Listeners, N extends Channel
  * const { message, setMessage } = useChannelExternalStateSync(channel, 'message')
  * ```
  */
-export function useChannelExternalStateSync<T extends Listeners, N extends ChannelStateName<T, 'ExternalSync'>>(channel: Channel<T>, name: N, initialValue: StateValue<T, N, typeof ExternalPrefix> = new DefaultValue(), notSyncInitial = false): NamedChannelBind<T, N, typeof ExternalPrefix> {
+export function useChannelExternalStateSync<T extends Listeners, N extends ChannelStateName<T, 'ExternalSync'>>(channel: Channel<T>, name: N, initialValue: StateValue<T, N, typeof ExternalPrefix> = NONE, notSyncInitial = false): NamedChannelBind<T, N, typeof ExternalPrefix> {
   return useChannelState('ExternalSync', channel, name, initialValue, notSyncInitial)
 }
 
-export class Channel<T extends Listeners> {
+export class Channel<T extends Listeners, S extends string = typeof SourcePrefix, E extends string = typeof ExternalPrefix> {
   private backwards: Set<Channel<any>> = new Set()
   private forwards: Set<Channel<any>> = new Set()
   private listeners: Partial<Record<keyof T, Listener[]>> = {}
-  private snapshots: Partial<{ [k in keyof T]: Parameters<T[k]> }> = {}
+  private snapshots: Partial<{ [k in StateKeys<T, S> & StateKeys<T, E>]: Parameters<T[k]> }> = {}
   readonly name: string | undefined
 
   constructor(name?: string) {
@@ -256,38 +280,53 @@ export class Channel<T extends Listeners> {
     return this as Channel<T & T1>
   }
 
-  private getForwards(name: keyof T, touches: Set<Channel<any>> = new Set()) {
-    const listeners: Listener[] = []
-    touches.add(this)
-    this.forwards.forEach(e => touches.has(e) || listeners.push(...e.getListeners(name, touches)))
-    return listeners
-  }
-
-  private getBackwards(name: keyof T, touches: Set<Channel<any>> = new Set()) {
-    const listeners: Listener[] = []
-    touches.add(this)
-    this.backwards.forEach(e => touches.has(e) || listeners.push(...e.getListeners(name, touches)))
-    return listeners
+  private traverse(
+    getConnections: (channel: Channel<any>) => Channel<any>[],
+    callback: (channel: Channel<any>) => boolean,
+    touches: Set<Channel<any>> = new Set(),
+  ) {
+    let end = false
+    getConnections(this).some((channel: Channel<any>) => {
+      if (!touches.has(channel)) {
+        touches.add(channel)
+        end = callback(channel)
+        return end || channel.traverse(getConnections, callback, touches)
+      }
+    })
+    return end
   }
 
   private getListeners(name: keyof T, touches: Set<Channel<any>> = new Set()) {
-    return (this.listeners[name] || []).concat(this.getForwards(name, touches).concat(this.getBackwards(name, touches)))
+    const listeners = [...(this.listeners[name] || [])]
+    touches.add(this)
+    this.traverse(
+      channel => [...channel.backwards, ...channel.forwards],
+      (channel) => {
+        listeners.push(...channel.getListeners(name, touches))
+        return false
+      }, touches)
+    return listeners
   }
 
-  snapshot<N extends keyof T>(name: N): Parameters<T[N]> | DefaultValue {
-    for (const channel of this.backwards) {
-      if (name in channel.snapshots) {
-        return channel.snapshots[name] as never
-      }
-      else {
-        return channel.snapshot(name) as never
-      }
-    }
-    return new DefaultValue()
+  private static getSnapValue<T extends Listeners, N extends keyof T>(channel: Channel<T>, name: N) {
+    return name in channel.snapshots ? channel.snapshots[name] as any : NONE
+  }
+
+  snapshot<N extends keyof T>(name: N): Parameters<T[N]> | typeof NONE {
+    let found = Channel.getSnapValue(this, name)
+    found === NONE && this.traverse(
+      channel => [...channel.backwards, ...channel.forwards],
+      (channel) => {
+        found = Channel.getSnapValue(channel, name)
+        return found !== NONE
+      })
+    return found
   }
 
   send<N extends keyof T>(name: N, ...args: Parameters<T[N]>) {
-    this.snapshots[name] = args
+    const stateEventName = name as ChannelStateEventName<T, S, E>
+    const stateName = getEventStateName(SourcePrefix, stateEventName) || getEventStateName(ExternalPrefix, stateEventName)
+    if (stateName) (this.snapshots as any)[stateName] = args
     this.getListeners(name).forEach(listener => listener(...args))
   }
 
