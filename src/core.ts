@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Dispatch, MutableRefObject, SetStateAction, useEffect, useMemo, useRef, useState } from 'react'
-import { lowerFirst, upperFirst, useMounted, useOnce } from './utils'
+import { lowerFirst, upperFirst, useSyncEffect, useMounted, useOnce } from './utils'
 
 type OmitNever<T> = { [k in keyof T as [T[k]] extends [never] ? never : k]: T[k] }
 
@@ -138,7 +138,7 @@ function _useChannelState<T extends Listeners, N extends StateKeys<T, U>, U exte
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  useMemo(() => {
+  useSyncEffect(() => {
     return options.listen ? channel.listen(listenName, setValue as any) : undefined
   }, [channel, listenName, options.listen])
 
@@ -305,8 +305,8 @@ export function useChannelRef<T extends Listeners, N extends StateKeys<T, U>, U 
     },
   }), [channel.send, dispatchName, options.dispatch])
 
-  useEffect(() => {
-    channel.listen(listenName, ((v: any) => {
+  useSyncEffect(() => {
+    return channel.listen(listenName, ((v: any) => {
       ref.current = v
     }) as any)
   }, [channel, listenName])

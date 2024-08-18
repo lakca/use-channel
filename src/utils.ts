@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useRef } from 'react'
+import { DependencyList, EffectCallback, useEffect, useMemo, useRef } from 'react'
 
 export function useOnce<T>(fn: () => T) {
   const ref = useRef<T>()
@@ -16,6 +16,12 @@ export function useMounted() {
     mounted.current = true
   }, [])
   return mounted.current
+}
+
+export function useSyncEffect(effect: EffectCallback, deps: DependencyList) {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const disposal = useMemo(effect, deps)
+  useEffect(() => disposal, [disposal])
 }
 
 export function upperFirst<S extends string>(s: S): Capitalize<S> {
