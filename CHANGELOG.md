@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/lakca/use-channel/compare/v1.2.0...v1.2.1) (2024-08-19)
+
+
+### Bug Fixes
+
+* **disposal:** disposals before unmount on using hooks ([fbb713a](https://github.com/lakca/use-channel/commit/fbb713aad784b57b2f870e4550cbcef88b177288))
+
 # [1.2.0](https://github.com/lakca/use-channel/compare/v1.1.2...v1.2.0) (2024-08-16)
 
 
